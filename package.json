@@ -2,7 +2,6 @@
   "name": "auth-app-redux",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "server.js",
   "scripts": {
     "dev": "nodemon api/index.js",
@@ -15,6 +14,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "nodemon": "^3.1.4",
-    "pg": "^8.12.0"
+    "pg": "^8.12.0",
+    "sequelize": "^6.37.3"
   }
 }
