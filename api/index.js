@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const sequelize = require('./db'); 
+const userRoutes = require('./routes/userRoute.js')
 dotenv.config()
 
 const app = express();
@@ -10,7 +11,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 
-  // Check if sequelize is defined before using sync()
   if (sequelize) {
     sequelize.sync({ alter: true })
       .then(() => {
@@ -23,3 +23,5 @@ app.listen(PORT, () => {
     console.error('Sequelize is not properly initialized.');
   }
 });
+
+app.use('/api/user',userRoutes);
