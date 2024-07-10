@@ -1,13 +1,17 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { signInFailure, signInStart,signInSuccess } from "../../redux/user/userSlice.ts";
+import { RootState } from '../../redux/store.ts';
+import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({});
-  const [loading, setLoading] = useState(false);
+  const {loading}= useSelector((state:RootState)=>state.user)
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -16,21 +20,21 @@ const SignIn = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      setLoading(true);
+      dispatch(signInStart())
       const res = await axios.post("/api/auth/signin", formData, {
         headers: {
           "Content-Type": "application/json",
         },
-      });
+      }); 
+      dispatch(signInSuccess(res.data))
       console.log(res.data);
       toast.success("LoggedIn successfully!");
-      setLoading(false);
       setTimeout(() => {
         navigate("/");
       }, 3000);
     } catch (error) {
       console.error("Error submitting form:", error);
-      setLoading(false);
+     dispatch(signInFailure())
       toast.error(`wrong credentials`);
     }
   };
@@ -46,15 +50,17 @@ const SignIn = () => {
           type="email"
           placeholder="Email"
           id="email"
-          className="bg-slate-100 p-3 rounded-lg font-medium text-slate-700"
+          className="bg-slate-200 p-3 rounded-lg font-medium text-slate-700"
           onChange={handleChange}
+          required
         />
         <input
           type="password"
           placeholder="Password"
           id="password"
-          className="bg-slate-100 p-3 rounded-lg font-medium text-slate-700"
+          className="bg-slate-200 p-3 rounded-lg font-medium text-slate-700"
           onChange={handleChange}
+          required
         />
         <button
           disabled={loading}

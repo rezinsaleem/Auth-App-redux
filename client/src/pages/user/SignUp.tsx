@@ -46,22 +46,25 @@ const SignUp = () => {
           type="text"
           placeholder="Username"
           id="username"
-          className="bg-slate-100 p-3 rounded-lg font-medium text-slate-700"
+          className="bg-slate-200 p-3 rounded-lg font-medium text-slate-700"
           onChange={handleChange}
+          required
         />
         <input
           type="email"
           placeholder="Email"
           id="email"
-          className="bg-slate-100 p-3 rounded-lg font-medium text-slate-700"
+          className="bg-slate-200 p-3 rounded-lg font-medium text-slate-700"
           onChange={handleChange}
+          required
         />
         <input
           type="password"
           placeholder="Password"
           id="password"
-          className="bg-slate-100 p-3 rounded-lg font-medium text-slate-700"
+          className="bg-slate-200 p-3 rounded-lg font-medium text-slate-700"
           onChange={handleChange}
+          required
         />
         <button
           disabled={loading}
