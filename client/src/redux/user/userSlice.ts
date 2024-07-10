@@ -1,7 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  profilePicture: string;
+}
+
 export interface UserState {
-  currentUser: string | null; 
+  currentUser: User | null;
   loading: boolean;
 }
 
@@ -17,7 +25,7 @@ const userSlice = createSlice({
     signInStart: (state) => {
       state.loading = true;
     },
-    signInSuccess: (state, action: PayloadAction<string>) => { 
+    signInSuccess: (state, action: PayloadAction<User>) => { 
       state.currentUser = action.payload;
       state.loading = false;
     },
