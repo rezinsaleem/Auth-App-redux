@@ -1,35 +1,37 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const SignUp = () => {
-
-  const [formData,setFormData] = useState({}) 
+  const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleChange = (e:React.ChangeEvent<HTMLInputElement> ) =>{
-    setFormData({...formData,[e.target.id]:e.target.value });
-  }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await axios.post('/api/auth/signup', formData, {
+      const res = await axios.post("/api/auth/signup", formData, {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       });
-      console.log(res.data); 
-      toast.success('User created successfully!');
+      console.log(res.data);
+      toast.success("User created successfully!");
       setLoading(false);
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
       setLoading(false);
-      toast.error('Something went wrong!');
+      toast.error("Something went wrong!");
     }
   };
 
@@ -44,22 +46,28 @@ const SignUp = () => {
           type="text"
           placeholder="Username"
           id="username"
-          className="bg-slate-100 p-3 rounded-lg font-medium text-slate-700" onChange={handleChange}
+          className="bg-slate-100 p-3 rounded-lg font-medium text-slate-700"
+          onChange={handleChange}
         />
         <input
           type="email"
           placeholder="Email"
           id="email"
-          className="bg-slate-100 p-3 rounded-lg font-medium text-slate-700" onChange={handleChange}
+          className="bg-slate-100 p-3 rounded-lg font-medium text-slate-700"
+          onChange={handleChange}
         />
         <input
           type="password"
           placeholder="Password"
           id="password"
-          className="bg-slate-100 p-3 rounded-lg font-medium text-slate-700" onChange={handleChange}
+          className="bg-slate-100 p-3 rounded-lg font-medium text-slate-700"
+          onChange={handleChange}
         />
-        <button disabled={loading} className="p-2 bg-slate-700 font-medium text-white rounded-lg hover:opacity-95 disabled:opacity-80">
-        {loading ? 'Loading...' : 'SIGN UP'}
+        <button
+          disabled={loading}
+          className="p-2 bg-slate-700 font-medium text-white rounded-lg hover:opacity-95 disabled:opacity-80"
+        >
+          {loading ? "Loading..." : "SIGN UP"}
         </button>
       </form>
       <div className="flex gap-2 mt-4 justify-center ">
