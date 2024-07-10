@@ -2,9 +2,12 @@ const express = require('express');
 const dotenv = require('dotenv');
 const sequelize = require('./db'); 
 const userRoutes = require('./routes/userRoute.js')
+const authRoutes = require('./routes/authRoute.js')
 dotenv.config()
 
 const app = express();
+
+app.use(express.json());  
 
 const PORT = process.env.PORT || 3000;
 
@@ -25,3 +28,4 @@ app.listen(PORT, () => {
 });
 
 app.use('/api/user',userRoutes);
+app.use('/api/auth',authRoutes);
