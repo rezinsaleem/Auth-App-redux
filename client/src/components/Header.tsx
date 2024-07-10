@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
 const Header = () => {
   return (
-    <div className="bg-blue-200">
-     <div className="flex justify-between items-center max-w-6xl mx-auto p-3 text-slate-700">
+    <div className="bg-slate-700">
+     <div className="flex justify-between items-center max-w-6xl mx-auto p-3 text-white">
       <Link to='/'>
       <h1 className='font-bold'>Auth App</h1>
       </Link>
