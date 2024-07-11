@@ -20,6 +20,8 @@ import {
   deleteUserFailure,
   signOut,
 } from "../../redux/user/userSlice";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -30,13 +32,54 @@ const Profile = () => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<File | undefined>(undefined);
   const [imgErr, setImgErr] = useState(false);
-  const [formData, setFormData] = useState({
-    username: currentUser?.username || "",
-    email: currentUser?.email || "",
-    password: "",
-    profilePicture: "",
-  });
   const [updateSuccess, setUpdateSuccess] = useState(false);
+
+  const validationSchema = yup.object({
+    username: yup
+      .string()
+      .min(3, 'Username should be at least 3 characters')
+      .required('Username is required'),
+    email: yup
+      .string()
+      .email('Enter a valid email')
+      .required('Email is required'),
+    password: yup
+      .string()
+      .min(6, 'Password should be at least 6 characters'),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      username: currentUser?.username || "",
+      email: currentUser?.email || "",
+      password: "",
+      profilePicture: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      try {
+        dispatch(updateUserStart());
+        const res = await fetch(`/api/user/update/${currentUser?.id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || "Failed to update user");
+        }
+        dispatch(updateUserSuccess(data));
+        setUpdateSuccess(true);
+        toast.success("User updated successfully!");
+      } catch (error) {
+        console.error("Error updating user:", error);
+        dispatch(updateUserFailure());
+        toast.error("Failed to update user");
+      }
+    },
+  });
 
   useEffect(() => {
     if (image) {
@@ -58,40 +101,11 @@ const Profile = () => {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setFormData({ ...formData, profilePicture: downloadURL });
+          formik.setFieldValue("profilePicture", downloadURL);
           toast.success("Image changed successfully");
         });
       }
     );
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      dispatch(updateUserStart());
-      const res = await fetch(`/api/user/update/${currentUser?.id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to update user");
-      }
-      dispatch(updateUserSuccess(data));
-      setUpdateSuccess(true);
-      toast.success("User updated successfully!");
-    } catch (error) {
-      console.error("Error updating user:", error);
-      dispatch(updateUserFailure());
-      toast.error("Failed to update user");
-    }
   };
 
   const handleDeleteAccount = async () => {
@@ -129,7 +143,7 @@ const Profile = () => {
       <h1 className="text-3xl text-center font-semibold my-7 text-slate-700">
         Profile
       </h1>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
         <ToastContainer />
         <input
           type="file"
@@ -143,7 +157,7 @@ const Profile = () => {
           }}
         />
         <img
-          src={formData.profilePicture || currentUser.profilePicture}
+          src={formik.values.profilePicture || currentUser.profilePicture}
           alt="profile"
           className="h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2"
           onClick={() => fileRef.current?.click()}
@@ -156,28 +170,43 @@ const Profile = () => {
           )}
         </p>
         <input
-          value={formData.username}
+          value={formik.values.username}
           type="text"
           id="username"
+          name="username"
           placeholder="Username"
           className="bg-slate-200 p-3 rounded-lg font-medium text-slate-700"
-          onChange={handleChange}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
         />
+        {formik.touched.username && formik.errors.username ? (
+          <div className="text-red-500 text-sm">{formik.errors.username}</div>
+        ) : null}
         <input
-          value={formData.email}
+          value={formik.values.email}
           type="email"
           id="email"
+          name="email"
           placeholder="Email"
           className="bg-slate-200 p-3 rounded-lg font-medium text-slate-700"
-          onChange={handleChange}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
         />
+        {formik.touched.email && formik.errors.email ? (
+          <div className="text-red-500 text-sm">{formik.errors.email}</div>
+        ) : null}
         <input
           type="password"
           id="password"
+          name="password"
           placeholder="Password"
           className="bg-slate-200 p-3 rounded-lg font-medium text-slate-700"
-          onChange={handleChange}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
         />
+        {formik.touched.password && formik.errors.password ? (
+          <div className="text-red-500 text-sm">{formik.errors.password}</div>
+        ) : null}
         <button
           type="submit"
           className="bg-slate-700 text-white p-2 rounded-lg uppercase font-medium hover:opacity-95 disabled:opacity-80 "
