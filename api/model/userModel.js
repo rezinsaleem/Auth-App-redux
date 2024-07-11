@@ -24,7 +24,7 @@ const User = sequelize.define(
       allowNull: false,
     },
     profilePicture: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(1000),
       defaultValue:
         "https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg",
     },

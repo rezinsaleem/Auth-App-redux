@@ -1,6 +1,6 @@
-import User from '../model/userModel.js';
-import { errorHandler } from '../utils/error.js';
-import bcryptjs from 'bcryptjs';
+const User = require('../model/userModel.js');
+const { errorHandler } = require('../utils/error.js');
+const bcryptjs = require('bcryptjs') ;
 
 const test = (req,res) =>{
   res.json({
@@ -9,32 +9,43 @@ const test = (req,res) =>{
 }
 
 const updateUser = async (req, res, next) => {
-  if (req.user.id !== req.params.id) {
-    return next(errorHandler(401, 'You can update only your account!'));
-  }
+  const userId = req.params.id;
+  const {username, email, password, profilePicture } = req.body;
+
+  // if (req.user.id !== userId) {
+  //   return next(errorHandler(401, 'You can update only your account!'));
+  // }
+
   try {
-    if (req.body.password) {
-      req.body.password = bcryptjs.hashSync(req.body.password, 10);
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return next(errorHandler(404, 'User not found'));
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: {
-          username: req.body.username,
-          email: req.body.email,
-          password: req.body.password,
-          profilePicture: req.body.profilePicture,
-        },
-      },
-      { new: true }
-    );
-    const { password, ...rest } = updatedUser._doc;
+    if (password) {
+      user.password = bcryptjs.hashSync(password, 10);
+    }
+    if (username) {
+      user.username = username;
+    }
+    if (email) {
+      user.email = email;
+    }
+    if (profilePicture) {
+      user.profilePicture = profilePicture;
+    }
+
+    await user.save();
+
+    const { password: omitPassword, ...rest } = user.dataValues;
+
     res.status(200).json(rest);
   } catch (error) {
     next(error);
   }
 };
+
 
 module.exports = {
   test,

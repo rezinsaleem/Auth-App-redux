@@ -1,6 +1,6 @@
 const express =  require('express');
-import { test, updateUser } from '../controllers/user.controller.js';
-import { verifyToken } from '../utils/verifyUser.js';
+const { test, updateUser } = require('../controller/userController.js') ;
+const { verifyToken } =require('../utils/verifyUser.js');
 
 const router = express.Router()
 
