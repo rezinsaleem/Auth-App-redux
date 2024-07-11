@@ -3,9 +3,12 @@ const dotenv = require('dotenv');
 const sequelize = require('./db'); 
 const userRoutes = require('./routes/userRoute.js')
 const authRoutes = require('./routes/authRoute.js')
+const cookieParser = require('cookie-parser')
 dotenv.config()
 
 const app = express();
+
+app.use(cookieParser());
 
 app.use(express.json());  
 
