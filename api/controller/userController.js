@@ -47,7 +47,25 @@ const updateUser = async (req, res, next) => {
 };
 
 
+const deleteUser = async (req, res, next) => {
+  // if (req.user.id !== req.params.id) {
+  //   return next(errorHandler(401, 'You can delete only your account!'));
+  // }
+  try {
+    const user = await User.findByPk(req.params.id);
+    if (!user) {
+      return next(errorHandler(404, 'User not found!'));
+    }
+
+    await user.destroy();
+    res.status(200).json('User has been deleted...');
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   test,
-  updateUser
+  updateUser,
+  deleteUser,
 }

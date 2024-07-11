@@ -32,7 +32,7 @@ const SignIn = () => {
     } catch (error) {
       console.error("Error submitting form:", error);
      dispatch(signInFailure())
-      toast.error(`wrong credentials`);
+      toast.error(`wrong credentials or user doesn't exist`);
     }
   };
 
