@@ -5,6 +5,7 @@ import SignUp from "./pages/user/SignUp";
 import Profile from "./pages/user/Profile";
 import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
+import PrivateRouteSign from "./components/PrivateRouteSign";
 
 const App = () => {
   return (
@@ -12,8 +13,8 @@ const App = () => {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<PrivateRouteSign component={SignIn} />} />
+        <Route path="/signup" element={<PrivateRouteSign component={SignUp} />} />
         <Route element={<PrivateRoute />}>
           <Route path='/profile' element={<Profile />} />
         </Route>

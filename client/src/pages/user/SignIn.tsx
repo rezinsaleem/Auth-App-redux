@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { signInFailure, signInStart,signInSuccess } from "../../redux/user/userSlice.ts";
@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({});
-  const {loading}= useSelector((state:RootState)=>state.user)
+  const {loading, currentUser}= useSelector((state:RootState)=>state.user)
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -29,15 +29,21 @@ const SignIn = () => {
       dispatch(signInSuccess(res.data))
       console.log(res.data);
       toast.success("LoggedIn successfully!");
-      setTimeout(() => {
-        navigate("/");
-      }, 3000);
     } catch (error) {
       console.error("Error submitting form:", error);
      dispatch(signInFailure())
       toast.error(`wrong credentials`);
     }
   };
+
+  useEffect(() => {
+    if (currentUser) {
+      const timer = setTimeout(() => {
+        navigate("/");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentUser, navigate]);
 
   return (
     <div className="p-3 max-w-lg mx-auto">
